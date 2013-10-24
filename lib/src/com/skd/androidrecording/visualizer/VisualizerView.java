@@ -32,11 +32,14 @@ import com.skd.androidrecording.visualizer.renderer.Renderer;
  * {@link Visualizer.OnDataCaptureListener#onFftDataCapture }
  */
 public class VisualizerView extends View {
-  private static final String TAG = "VisualizerView";
+  public static final String TAG = "VisualizerView";
 
   private byte[] mBytes;
   private byte[] mFFTBytes;
+  private AudioData mAudioData = null;
+  private FFTData mFftData = null;
   private Rect mRect = new Rect();
+  private Matrix mMatrix = new Matrix();
   private Visualizer mVisualizer;
 
   private Set<Renderer> mRenderers;
@@ -198,19 +201,25 @@ public class VisualizerView extends View {
     
     if (mBytes != null) {
       // Render all audio renderers
-      AudioData audioData = new AudioData(mBytes);
+      if (mAudioData == null) {
+    	  mAudioData = new AudioData();
+      }
+      mAudioData.setBytes(mBytes);
       for(Renderer r : mRenderers)
       {
-        r.render(mCanvas, audioData, mRect);
+        r.render(mCanvas, mAudioData, mRect);
       }
     }
 
     if (mFFTBytes != null) {
       // Render all FFT renderers
-      FFTData fftData = new FFTData(mFFTBytes);
+      if (mFftData == null) {
+    	  mFftData = new FFTData();
+      }
+      mFftData.setBytes(mFFTBytes);
       for(Renderer r : mRenderers)
       {
-        r.render(mCanvas, fftData, mRect);
+        r.render(mCanvas, mFftData, mRect);
       }
     }
 
@@ -223,6 +232,7 @@ public class VisualizerView extends View {
       mCanvas.drawPaint(mFlashPaint);
     }
 
-    canvas.drawBitmap(mCanvasBitmap, new Matrix(), null);
+    mMatrix.reset();
+    canvas.drawBitmap(mCanvasBitmap, mMatrix, null);
   }
 }

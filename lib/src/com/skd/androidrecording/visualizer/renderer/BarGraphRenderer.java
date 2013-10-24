@@ -44,11 +44,11 @@ public class BarGraphRenderer extends Renderer
   @Override
   public void onRender(Canvas canvas, FFTData data, Rect rect)
   {
-    for (int i = 0; i < data.bytes.length / mDivisions; i++) {
+    for (int i = 0; i < data.getBytes().length / mDivisions; i++) {
       mFFTPoints[i * 4] = i * 4 * mDivisions;
       mFFTPoints[i * 4 + 2] = i * 4 * mDivisions;
-      byte rfk = data.bytes[mDivisions * i];
-      byte ifk = data.bytes[mDivisions * i + 1];
+      byte rfk = data.getBytes()[mDivisions * i];
+      byte ifk = data.getBytes()[mDivisions * i + 1];
       float magnitude = (rfk * rfk + ifk * ifk);
       int dbValue = (int) (10 * Math.log10(magnitude));
 

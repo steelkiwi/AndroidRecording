@@ -49,8 +49,8 @@ abstract public class Renderer
    */
   final public void render(Canvas canvas, AudioData data, Rect rect)
   {
-    if (mPoints == null || mPoints.length < data.bytes.length * 4) {
-      mPoints = new float[data.bytes.length * 4];
+    if (mPoints == null || mPoints.length < data.getBytes().length * 4) {
+      mPoints = new float[data.getBytes().length * 4];
     }
 
     onRender(canvas, data, rect);
@@ -64,8 +64,8 @@ abstract public class Renderer
    */
   final public void render(Canvas canvas, FFTData data, Rect rect)
   {
-    if (mFFTPoints == null || mFFTPoints.length < data.bytes.length * 4) {
-      mFFTPoints = new float[data.bytes.length * 4];
+    if (mFFTPoints == null || mFFTPoints.length < data.getBytes().length * 4) {
+      mFFTPoints = new float[data.getBytes().length * 4];
     }
 
     onRender(canvas, data, rect);
