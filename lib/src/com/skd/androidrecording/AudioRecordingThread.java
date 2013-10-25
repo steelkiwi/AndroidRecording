@@ -159,6 +159,9 @@ public class AudioRecordingThread extends Thread {
         try {
 			PcmAudioHelper.convertRawToWav(WavAudioFormat.mono16Bit(SAMPLING_RATE), file_raw, file_wav);
 			file_raw.delete();
+			if (handler != null) {
+				handler.onRecordSuccess();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			if (handler != null) {

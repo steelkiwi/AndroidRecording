@@ -5,36 +5,20 @@
     android:background="#000000"
     tools:context=".AndroidRecordActivity" >
 
-    <LinearLayout
-        android:id="@+id/controlsView"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/recordBtn"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_margin="16dp"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/recordBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="@string/recordBtn" >
-        </Button>
-
-        <Button
-            android:id="@+id/playBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="@string/playBtn" >
-        </Button>
-    </LinearLayout>
+        android:background="@android:color/holo_blue_light"
+        android:text="@string/recordBtn" >
+    </Button>
 
     <com.skd.androidrecording.visualizer.VisualizerView
         android:id="@+id/visualizerView"
         android:layout_width="fill_parent"
         android:layout_height="100dp"
-        android:layout_below="@+id/controlsView"
+        android:layout_below="@+id/recordBtn"
         android:layout_margin="16dp" >
     </com.skd.androidrecording.visualizer.VisualizerView>
 

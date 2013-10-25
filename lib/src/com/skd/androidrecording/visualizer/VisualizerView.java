@@ -141,7 +141,9 @@ public class VisualizerView extends View {
    */
   public void release()
   {
-    mVisualizer.release();
+    if (mVisualizer != null) {
+    	mVisualizer.release();
+    }
   }
 
   /**
