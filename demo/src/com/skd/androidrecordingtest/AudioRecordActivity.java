@@ -44,7 +44,7 @@ public class AudioRecordActivity extends Activity implements OnPreparedListener,
 			NotificationUtils.showInfoDialog(this, getString(R.string.noExtStorageAvailable));
 			return;
 		}
-		fileName = StorageUtils.getFileName();
+		fileName = StorageUtils.getFileName(true);
 		
 		recordBtn = (Button) findViewById(R.id.recordBtn);
 		recordBtn.setOnClickListener(new OnClickListener() {

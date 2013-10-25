@@ -36,6 +36,11 @@ public class MainActivity extends Activity {
 				startActivity(i);
 				break;
 			}
+			case 1: {
+				Intent i = new Intent(MainActivity.this, VideoRecordActivity.class);
+				startActivity(i);
+				break;
+			}
 		}
 	}
 }
