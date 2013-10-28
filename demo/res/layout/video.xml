@@ -5,21 +5,40 @@
     android:background="#000000"
     tools:context=".AudioRecordActivity" >
 
-    <Button
-        android:id="@+id/recordBtn"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:id="@+id/controlsLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@android:color/holo_blue_light"
-        android:text="@string/recordBtn" >
-    </Button>
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:padding="8dp" >
 
-    <SurfaceView
-        android:id="@+id/videoView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/recordBtn"
-        android:layout_margin="16dp" >
-    </SurfaceView>
+        <Button
+            android:id="@+id/recordBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/holo_blue_light"
+            android:text="@string/recordBtn" />
+
+        <Spinner
+            android:id="@+id/previewSizeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/controlsLayout"
+        android:background="#000000" >
+
+        <com.skd.androidrecording.AdaptiveSurfaceView
+            android:id="@+id/videoView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
 
 </RelativeLayout>

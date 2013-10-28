@@ -1,18 +1,25 @@
 package com.skd.androidrecordingtest;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import android.app.Activity;
 import android.hardware.Camera;
-import android.media.MediaRecorder;
+import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.skd.androidrecording.AdaptiveSurfaceView;
+import com.skd.androidrecording.CameraHelper;
+import com.skd.androidrecording.MediaRecorderHelper;
 import com.skd.androidrecordingtest.utils.NotificationUtils;
 import com.skd.androidrecordingtest.utils.StorageUtils;
 
@@ -20,13 +27,15 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 	private static String fileName = null;
     
 	private Button recordBtn;
-	private SurfaceView videoView;
+	private Spinner previewSizeSpinner; //TODO add spinner for output video size
+	private AdaptiveSurfaceView videoView;
 	
 	private Camera camera;
-	private MediaRecorder recorder;
+	private MediaRecorderHelper recorder;
 	
-	private boolean prepareRecording = false;
-	private boolean startRecording = true;
+	private Size previewSize;
+	private int cameraRotationDegree;
+	private boolean isPreviewStarted = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,132 +56,98 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 			}
 		});
 		
-		videoView = (SurfaceView) findViewById(R.id.videoView);
+		videoView = (AdaptiveSurfaceView) findViewById(R.id.videoView);
 		videoView.getHolder().addCallback(this);
+		
+		recorder = new MediaRecorderHelper();
 	}
 	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		
-		recordStop();
-		//pausePlaying();
+	private void initPreviewSizeSpinner() {
+		previewSizeSpinner = (Spinner) findViewById(R.id.previewSizeSpinner);
+		List<Size> sizes = camera.getParameters().getSupportedPreviewSizes();
+		previewSizeSpinner.setAdapter(new PreviewSizeAdapter(sizes));
+		previewSizeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				previewSize = (Size) arg0.getItemAtPosition(arg2);
+				videoView.setPreviewSize(previewSize);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {}
+		});
+		previewSize = (Size) previewSizeSpinner.getItemAtPosition(0);
 	}
 	
-	@Override
-	protected void onDestroy() {
-		//finishPlaying();
-		
-		super.onDestroy();
+	//previewing ********************************************************************************
+	
+	private void setupCamera(Size sz) {
+		try {
+			stopCameraPreviewIfNeeded();
+			
+			cameraRotationDegree = CameraHelper.setCameraDisplayOrientation(this, 0, camera); //TODO switch camera
+			Parameters param = camera.getParameters();
+			param.setPreviewSize(sz.width, sz.height);
+			camera.setParameters(param);
+			
+			camera.setPreviewDisplay(videoView.getHolder());
+			
+			camera.startPreview();
+			isPreviewStarted = true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void stopCameraPreviewIfNeeded() {
+		if (isPreviewStarted) {
+			camera.stopPreview();
+		}
 	}
 	
 	//recording *********************************************************************************
 
 	private void record() {
-		if (!prepareRecording) {
-			NotificationUtils.showInfoDialog(this, getString(R.string.videoPrepareError));
+		if (recorder.isRecording()) {
+			recorder.stopRecording();
+			recordBtn.setText(R.string.recordBtn);
+		}
+		else {
+			tryToStartRecording();
+		}
+	}
+	
+	private void tryToStartRecording() {
+		if (recorder.startRecording(camera, previewSize, cameraRotationDegree, fileName)) {
+			recordBtn.setText(R.string.stopRecordBtn);
 			return;
 		}
-
-        if (startRecording) {
-        	//finishPlaying();
-        	recordStart();
-        }
-        else {
-        	recordStop();
-        }
+		Toast.makeText(this, getString(R.string.videoRecordingError), Toast.LENGTH_LONG).show();
 	}
 	
-	private void recordStart() {
-		startRecording();
-    	recordBtn.setText(R.string.stopRecordBtn);
-    	startRecording = false;
-	}
-	
-	private void recordStop() {
-		stopRecording();
-    	recordBtn.setText(R.string.recordBtn);
-    	startRecording = true;
-	}
-	
-	private void prepareRecording() {
-		try {
-			camera = Camera.open();
-			camera.setPreviewDisplay(videoView.getHolder());
-/*			Camera.Parameters parameters = camera.getParameters();
-	        parameters.setPreviewSize(640, 480);
-	        camera.setParameters(parameters);*/
-	        camera.startPreview();
-	        camera.unlock();
-	        
-	        recorder = new MediaRecorder();
-	        recorder.setCamera(camera);
-	        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-	       	recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-	       	recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-	       	recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-	       	recorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
-	       	prepareOutputFile();
-	    	recorder.setOutputFile(fileName);
-	    	//recorder.setVideoSize(720, 1280);
-	    	recorder.setPreviewDisplay(videoView.getHolder().getSurface());
-	    	recorder.prepare();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void startRecording() {
-		if (recorder == null) {
-			prepareRecording();
-		}
-		try {
-			recorder.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-    }
-    
-    private void stopRecording() {
-    	if (recorder != null) {
-    		try {
-	    		recorder.stop();
-    		} catch (IllegalStateException e) {
-				e.printStackTrace();
-			}
-    		recorder.release();
-			recorder = null;
-    	}
-    	if (camera != null) {
-            try {
-				camera.reconnect();
-				camera.stopPreview();
-	            camera.release();
-	            camera = null;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-        }
-    }
-    
-    //surface ***********************************************************************************
+    //surface holder callbacks ******************************************************************
     
     @Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		prepareRecording();
-		prepareRecording = true;
+    	camera = Camera.open();
 	}
     
 	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		if (previewSizeSpinner == null) {
+    		initPreviewSizeSpinner();
+		}
+    	else {
+			setupCamera(previewSize);
+		}
+	}
 	
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		//finishRecording();
-	}
-	
-	private void prepareOutputFile() {
-		File f = new File(fileName);
-		if (f.exists()) { f.delete(); }
+		if (recorder.isRecording()) {
+			recorder.stopRecording();
+		}
+		camera.release();
+		camera = null;
 	}
 }

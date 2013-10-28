@@ -18,6 +18,6 @@
     <string name="noExtStorageAvailable">External storage is unavailable</string>
     <string name="recordingError">Error recording audio</string>
     <string name="saveRecordError">Error saving audio record</string>
-    <string name="videoPrepareError">It takes some time to prepare video recording.. Please, wait for a while</string>
+    <string name="videoRecordingError">Recording video failed</string>
 
 </resources>
