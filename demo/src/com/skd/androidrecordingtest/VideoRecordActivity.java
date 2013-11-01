@@ -3,10 +3,12 @@ package com.skd.androidrecordingtest;
 import java.io.IOException;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -27,13 +29,13 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 	private static String fileName = null;
     
 	private Button recordBtn;
-	private Spinner previewSizeSpinner; //TODO add spinner for output video size
+	private Spinner previewSizeSpinner, videoSizeSpinner;
 	private AdaptiveSurfaceView videoView;
 	
 	private Camera camera;
 	private MediaRecorderHelper recorder;
 	
-	private Size previewSize;
+	private Size previewSize = null, videoSize = null;
 	private int cameraRotationDegree;
 	private boolean isPreviewStarted = false;
 	
@@ -79,6 +81,28 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 		previewSize = (Size) previewSizeSpinner.getItemAtPosition(0);
 	}
 	
+	@SuppressLint("NewApi")
+	private void initVideoSizeSpinner() {
+		videoSizeSpinner = (Spinner) findViewById(R.id.videoSizeSpinner);
+		if (Build.VERSION.SDK_INT >= 11) {
+			List<Size> sizes = camera.getParameters().getSupportedVideoSizes();
+			videoSizeSpinner.setAdapter(new PreviewSizeAdapter(sizes));
+			videoSizeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+					videoSize = (Size) arg0.getItemAtPosition(arg2);
+				}
+	
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {}
+			});
+			videoSize = (Size) videoSizeSpinner.getItemAtPosition(0);
+		}
+		else {
+			videoSizeSpinner.setVisibility(View.GONE);
+		}
+	}
+	
 	//previewing ********************************************************************************
 	
 	private void setupCamera(Size sz) {
@@ -111,6 +135,7 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 		if (recorder.isRecording()) {
 			recorder.stopRecording();
 			recordBtn.setText(R.string.recordBtn);
+			videoSizeSpinner.setEnabled(true);
 		}
 		else {
 			tryToStartRecording();
@@ -118,8 +143,9 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 	}
 	
 	private void tryToStartRecording() {
-		if (recorder.startRecording(camera, previewSize, cameraRotationDegree, fileName)) {
+		if (recorder.startRecording(camera, fileName, videoSize, cameraRotationDegree)) {
 			recordBtn.setText(R.string.stopRecordBtn);
+			videoSizeSpinner.setEnabled(false);
 			return;
 		}
 		Toast.makeText(this, getString(R.string.videoRecordingError), Toast.LENGTH_LONG).show();
@@ -136,6 +162,7 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		if (previewSizeSpinner == null) {
     		initPreviewSizeSpinner();
+    		initVideoSizeSpinner();
 		}
     	else {
 			setupCamera(previewSize);

@@ -15,23 +15,51 @@
 
         <Button
             android:id="@+id/recordBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
+            android:layout_weight="1"
             android:background="@android:color/holo_blue_light"
             android:text="@string/recordBtn" />
 
+        <Button
+            android:id="@+id/switchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/background_light"
+            android:text="@string/frontBtn" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sizesLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/controlsLayout"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" >
+
         <Spinner
             android:id="@+id/previewSizeSpinner"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_weight="0.5"
+            android:background="@android:color/white" />
+
+        <Spinner
+            android:id="@+id/videoSizeSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
             android:background="@android:color/white" />
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/controlsLayout"
+        android:layout_below="@id/sizesLayout"
         android:background="#000000" >
 
         <com.skd.androidrecording.AdaptiveSurfaceView

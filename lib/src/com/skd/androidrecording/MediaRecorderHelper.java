@@ -7,8 +7,8 @@ import android.hardware.Camera.Size;
 import android.media.MediaRecorder;
 
 public class MediaRecorderHelper {
-	private static final int VIDEO_W = 1280;
-	private static final int VIDEO_H = 720;
+	private static final int VIDEO_W_DEFAULT = 800;
+	private static final int VIDEO_H_DEFAULT = 480;
 	
 	private MediaRecorder recorder;
 	private boolean isRecording;
@@ -17,15 +17,19 @@ public class MediaRecorderHelper {
 		recorder = new MediaRecorder();
 	}
 
-	public boolean startRecording(Camera camera, Size size, int camRotationDegree, String fileName) {
+	public boolean startRecording(Camera camera, String fileName, Size sz, int cameraRotationDegree) {
+		if (sz == null) {
+			sz = camera.new Size(VIDEO_W_DEFAULT, VIDEO_H_DEFAULT);
+		}
+		
 		try {
 			camera.unlock();
 			recorder.setCamera(camera);
-			recorder.setOrientationHint(camRotationDegree);
+			recorder.setOrientationHint(cameraRotationDegree);
 			recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 			recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 			recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-			recorder.setVideoSize(VIDEO_W, VIDEO_H);
+			recorder.setVideoSize(sz.width, sz.height);
 			recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 			recorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
 			recorder.setOutputFile(fileName);
