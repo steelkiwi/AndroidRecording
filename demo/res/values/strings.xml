@@ -12,8 +12,6 @@
 
     <string name="recordBtn">Record</string>
     <string name="stopRecordBtn">Stop</string>
-    <string name="frontBtn">Front</string>
-    <string name="backBtn">Back</string>
     
     <string name="noExtStorageAvailable">External storage is unavailable</string>
     <string name="recordingError">Error recording audio</string>

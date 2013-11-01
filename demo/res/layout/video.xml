@@ -22,12 +22,13 @@
             android:background="@android:color/holo_blue_light"
             android:text="@string/recordBtn" />
 
-        <Button
+        <ImageButton
             android:id="@+id/switchBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/background_light"
-            android:text="@string/frontBtn" />
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:padding="8dp"
+            android:src="@drawable/ic_switch" />
     </LinearLayout>
 
     <LinearLayout
@@ -45,14 +46,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.53"
             android:background="@android:color/white" />
 
         <Spinner
             android:id="@+id/videoSizeSpinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:layout_weight="0.47"
             android:background="@android:color/white" />
     </LinearLayout>
 

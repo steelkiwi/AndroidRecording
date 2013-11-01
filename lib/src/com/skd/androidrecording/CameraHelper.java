@@ -2,10 +2,28 @@ package com.skd.androidrecording;
 
 import android.app.Activity;
 import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
 import android.view.Surface;
 
 public class CameraHelper {
 
+	public static int getAvailableCamerasCount() {
+		return Camera.getNumberOfCameras();
+	}
+	
+	public static int getDefaultCameraID() {
+		int camerasCnt = getAvailableCamerasCount();
+		int defaultCameraID = 0;
+		CameraInfo cameraInfo = new CameraInfo();
+        for (int i=0; i <camerasCnt; i++) {
+            Camera.getCameraInfo(i, cameraInfo);
+            if (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK) {
+            	defaultCameraID = i;
+            }
+        }
+        return defaultCameraID;
+	}
+	
 	public static int setCameraDisplayOrientation(Activity activity, int cameraId, android.hardware.Camera camera) {
 		Camera.CameraInfo info = new Camera.CameraInfo();
 		Camera.getCameraInfo(cameraId, info);

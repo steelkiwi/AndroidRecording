@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -29,14 +30,16 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 	private static String fileName = null;
     
 	private Button recordBtn;
+	private ImageButton switchBtn;
 	private Spinner previewSizeSpinner, videoSizeSpinner;
 	private AdaptiveSurfaceView videoView;
 	
 	private Camera camera;
 	private MediaRecorderHelper recorder;
 	
-	private Size previewSize = null, videoSize = null;
+	private int camerasCnt, defaultCameraID;
 	private int cameraRotationDegree;
+	private Size previewSize = null, videoSize = null;
 	private boolean isPreviewStarted = false;
 	
 	@Override
@@ -50,6 +53,9 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 		}
 		fileName = StorageUtils.getFileName(false);
 		
+		camerasCnt = CameraHelper.getAvailableCamerasCount();
+		defaultCameraID = CameraHelper.getDefaultCameraID();
+		
 		recordBtn = (Button) findViewById(R.id.recordBtn);
 		recordBtn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -57,6 +63,19 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 				record();
 			}
 		});
+		
+		switchBtn = (ImageButton) findViewById(R.id.switchBtn);
+		if (camerasCnt > 1) {
+			switchBtn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					switchCamera();
+				}
+			});
+		}
+		else {
+			switchBtn.setVisibility(View.GONE);
+		}
 		
 		videoView = (AdaptiveSurfaceView) findViewById(R.id.videoView);
 		videoView.getHolder().addCallback(this);
@@ -67,7 +86,7 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 	private void initPreviewSizeSpinner() {
 		previewSizeSpinner = (Spinner) findViewById(R.id.previewSizeSpinner);
 		List<Size> sizes = camera.getParameters().getSupportedPreviewSizes();
-		previewSizeSpinner.setAdapter(new PreviewSizeAdapter(sizes));
+		previewSizeSpinner.setAdapter(new SizeAdapter(sizes, true));
 		previewSizeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -81,12 +100,19 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 		previewSize = (Size) previewSizeSpinner.getItemAtPosition(0);
 	}
 	
+	private void updatePreviewSizes() {
+		((SizeAdapter) previewSizeSpinner.getAdapter()).set(camera.getParameters().getSupportedPreviewSizes());
+		previewSizeSpinner.setSelection(0);
+		previewSize = (Size) previewSizeSpinner.getItemAtPosition(0);
+		videoView.setPreviewSize(previewSize);
+	}
+	
 	@SuppressLint("NewApi")
 	private void initVideoSizeSpinner() {
 		videoSizeSpinner = (Spinner) findViewById(R.id.videoSizeSpinner);
 		if (Build.VERSION.SDK_INT >= 11) {
 			List<Size> sizes = camera.getParameters().getSupportedVideoSizes();
-			videoSizeSpinner.setAdapter(new PreviewSizeAdapter(sizes));
+			videoSizeSpinner.setAdapter(new SizeAdapter(sizes, false));
 			videoSizeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -103,13 +129,22 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 		}
 	}
 	
+	@SuppressLint("NewApi")
+	private void updateVideoSizes() {
+		if (Build.VERSION.SDK_INT >= 11) {
+			((SizeAdapter) videoSizeSpinner.getAdapter()).set(camera.getParameters().getSupportedVideoSizes());
+			videoSizeSpinner.setSelection(0);
+			videoSize = (Size) videoSizeSpinner.getItemAtPosition(0);
+		}
+	}
+	
 	//previewing ********************************************************************************
 	
 	private void setupCamera(Size sz) {
 		try {
 			stopCameraPreviewIfNeeded();
 			
-			cameraRotationDegree = CameraHelper.setCameraDisplayOrientation(this, 0, camera); //TODO switch camera
+			cameraRotationDegree = CameraHelper.setCameraDisplayOrientation(this, 0, camera);
 			Parameters param = camera.getParameters();
 			param.setPreviewSize(sz.width, sz.height);
 			camera.setParameters(param);
@@ -129,12 +164,25 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 		}
 	}
 	
+	private void switchCamera() {
+		stopCameraPreviewIfNeeded();
+		camera.release();
+		camera = null;
+		
+		defaultCameraID = (defaultCameraID + 1) % camerasCnt;
+		camera = Camera.open(defaultCameraID);
+	
+		updatePreviewSizes();
+		updateVideoSizes();
+	}
+	
 	//recording *********************************************************************************
 
 	private void record() {
 		if (recorder.isRecording()) {
 			recorder.stopRecording();
 			recordBtn.setText(R.string.recordBtn);
+			switchBtn.setEnabled(true);
 			videoSizeSpinner.setEnabled(true);
 		}
 		else {
@@ -145,6 +193,7 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 	private void tryToStartRecording() {
 		if (recorder.startRecording(camera, fileName, videoSize, cameraRotationDegree)) {
 			recordBtn.setText(R.string.stopRecordBtn);
+			switchBtn.setEnabled(false);
 			videoSizeSpinner.setEnabled(false);
 			return;
 		}
@@ -155,7 +204,7 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
     
     @Override
 	public void surfaceCreated(SurfaceHolder holder) {
-    	camera = Camera.open();
+    	camera = Camera.open(defaultCameraID);
 	}
     
 	@Override
