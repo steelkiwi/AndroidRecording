@@ -191,7 +191,8 @@ public class VideoRecordActivity extends Activity implements SurfaceHolder.Callb
 	}
 	
 	private void tryToStartRecording() {
-		if (recorder.startRecording(camera, fileName, videoSize, cameraRotationDegree)) {
+		int degree = (CameraHelper.isCameraFacingBack(defaultCameraID)) ? cameraRotationDegree : cameraRotationDegree + 180;
+		if (recorder.startRecording(camera, fileName, videoSize, degree)) {
 			recordBtn.setText(R.string.stopRecordBtn);
 			switchBtn.setEnabled(false);
 			videoSizeSpinner.setEnabled(false);

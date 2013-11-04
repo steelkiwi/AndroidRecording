@@ -24,6 +24,12 @@ public class CameraHelper {
         return defaultCameraID;
 	}
 	
+	public static boolean isCameraFacingBack(int cameraID) {
+		CameraInfo cameraInfo = new CameraInfo();
+		Camera.getCameraInfo(cameraID, cameraInfo);
+		return (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK);
+	}
+	
 	public static int setCameraDisplayOrientation(Activity activity, int cameraId, android.hardware.Camera camera) {
 		Camera.CameraInfo info = new Camera.CameraInfo();
 		Camera.getCameraInfo(cameraId, info);
