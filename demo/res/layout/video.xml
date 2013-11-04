@@ -31,36 +31,20 @@
             android:src="@drawable/ic_switch" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/sizesLayout"
+    <Spinner
+        android:id="@+id/videoSizeSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/controlsLayout"
-        android:orientation="horizontal"
-        android:paddingBottom="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp" >
-
-        <Spinner
-            android:id="@+id/previewSizeSpinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_weight="0.53"
-            android:background="@android:color/white" />
-
-        <Spinner
-            android:id="@+id/videoSizeSpinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.47"
-            android:background="@android:color/white" />
-    </LinearLayout>
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@android:color/white" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/sizesLayout"
+        android:layout_below="@id/videoSizeSpinner"
         android:background="#000000" >
 
         <com.skd.androidrecording.AdaptiveSurfaceView
