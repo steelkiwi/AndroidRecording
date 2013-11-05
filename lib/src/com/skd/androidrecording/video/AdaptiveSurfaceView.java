@@ -1,4 +1,4 @@
-package com.skd.androidrecording;
+package com.skd.androidrecording.video;
 
 import android.content.Context;
 import android.hardware.Camera;

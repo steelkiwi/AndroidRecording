@@ -12,11 +12,9 @@ import android.widget.TextView;
 public class SizeAdapter extends BaseAdapter {
 
 	private List<Size> sizes; 
-	private boolean isPreview;
 	
-	public SizeAdapter(List<Size> sizes, boolean isPreview) {
+	public SizeAdapter(List<Size> sizes) {
 		this.sizes = sizes;
-		this.isPreview = isPreview;
 	}
 
 	public void set(List<Size> sizes) {
@@ -43,7 +41,7 @@ public class SizeAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		TextView view = new TextView(parent.getContext());
-		view.setText(String.format("%s: %sx%s", (isPreview) ? "Preview" : "Video", sizes.get(position).width, sizes.get(position).height));
+		view.setText(String.format("%s: %sx%s", "Video", sizes.get(position).width, sizes.get(position).height));
 		view.setEllipsize(TruncateAt.END);
 		view.setPadding(16, 16, 16, 16);
 		return view;
@@ -52,7 +50,7 @@ public class SizeAdapter extends BaseAdapter {
 	@Override
 	public View getDropDownView(int position, View convertView, ViewGroup parent) {
 		TextView view = new TextView(parent.getContext());
-		view.setText(String.format("%s: %sx%s", (isPreview) ? "Preview" : "Video", sizes.get(position).width, sizes.get(position).height));
+		view.setText(String.format("%s: %sx%s", "Video", sizes.get(position).width, sizes.get(position).height));
 		view.setPadding(16, 16, 16, 16);
 		return view;
 	}

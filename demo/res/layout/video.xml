@@ -47,7 +47,7 @@
         android:layout_below="@id/videoSizeSpinner"
         android:background="#000000" >
 
-        <com.skd.androidrecording.AdaptiveSurfaceView
+        <com.skd.androidrecording.video.AdaptiveSurfaceView
             android:id="@+id/videoView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

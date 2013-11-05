@@ -1,4 +1,4 @@
-package com.skd.androidrecording;
+package com.skd.androidrecording.video;
 
 import java.io.IOException;
 
@@ -6,14 +6,14 @@ import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.media.MediaRecorder;
 
-public class MediaRecorderHelper {
+public class MediaRecorderManager {
 	private static final int VIDEO_W_DEFAULT = 800;
 	private static final int VIDEO_H_DEFAULT = 480;
 	
 	private MediaRecorder recorder;
 	private boolean isRecording;
 
-	public MediaRecorderHelper() {
+	public MediaRecorderManager() {
 		recorder = new MediaRecorder();
 	}
 
@@ -45,14 +45,19 @@ public class MediaRecorderHelper {
 		return isRecording;
 	}
 
-	public void stopRecording() {
-		isRecording = false;
-		recorder.stop();
-		recorder.reset();
+	public boolean stopRecording() {
+		if (isRecording) {
+			isRecording = false;
+			recorder.stop();
+			recorder.reset();
+			return true;
+		}
+		return false;
 	}
 
-	public void recycle() {
+	public void releaseRecorder() {
 		recorder.release();
+		recorder = null;
 	}
 
 	public boolean isRecording() {

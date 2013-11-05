@@ -1,8 +1,12 @@
-package com.skd.androidrecording;
+package com.skd.androidrecording.video;
 
-import android.app.Activity;
+import java.util.List;
+
+import android.annotation.SuppressLint;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.Size;
+import android.os.Build;
 import android.view.Surface;
 
 public class CameraHelper {
@@ -30,12 +34,21 @@ public class CameraHelper {
 		return (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK);
 	}
 	
-	public static int setCameraDisplayOrientation(Activity activity, int cameraId, android.hardware.Camera camera) {
+	@SuppressLint("NewApi")
+	public static List<Size> getCameraSupportedVideoSizes(android.hardware.Camera camera) {
+		if ((Build.VERSION.SDK_INT >= 11) && (camera != null)) {
+			return camera.getParameters().getSupportedVideoSizes();
+		}
+		else {
+			return null;
+		}
+	}
+	
+	public static int setCameraDisplayOrientation(int cameraId, android.hardware.Camera camera, int displayRotation) {
 		Camera.CameraInfo info = new Camera.CameraInfo();
 		Camera.getCameraInfo(cameraId, info);
-		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
 		int degrees = 0;
-		switch (rotation) {
+		switch (displayRotation) {
 			case Surface.ROTATION_0:
 				degrees = 0;
 				break;
@@ -58,8 +71,9 @@ public class CameraHelper {
 			camRotationDegree = (info.orientation - degrees + 360) % 360;
 		}
 
-		camera.setDisplayOrientation(camRotationDegree);
+		if (camera != null) {
+			camera.setDisplayOrientation(camRotationDegree);
+		}
 		return camRotationDegree;
 	}
-	
 }
