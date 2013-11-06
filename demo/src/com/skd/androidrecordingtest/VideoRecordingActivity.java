@@ -4,10 +4,10 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.hardware.Camera.Size;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -19,17 +19,15 @@ import android.widget.Toast;
 
 import com.skd.androidrecording.video.AdaptiveSurfaceView;
 import com.skd.androidrecording.video.CameraHelper;
-import com.skd.androidrecording.video.VideoPlaybackHandler;
-import com.skd.androidrecording.video.VideoPlaybackManager;
 import com.skd.androidrecording.video.VideoRecordingHandler;
 import com.skd.androidrecording.video.VideoRecordingManager;
 import com.skd.androidrecordingtest.utils.NotificationUtils;
 import com.skd.androidrecordingtest.utils.StorageUtils;
 
-public class VideoRecordActivity extends Activity {
+public class VideoRecordingActivity extends Activity {
 	private static String fileName = null;
     
-	private Button recordBtn;
+	private Button recordBtn, playBtn;
 	private ImageButton switchBtn;
 	private Spinner videoSizeSpinner;
 	
@@ -53,20 +51,7 @@ public class VideoRecordActivity extends Activity {
 		
 		@Override
 		public int getDisplayRotation() {
-			return VideoRecordActivity.this.getWindowManager().getDefaultDisplay().getRotation();
-		}
-	};
-	
-	private VideoPlaybackManager playbackManager;
-	
-	private VideoPlaybackHandler playbackHandler = new VideoPlaybackHandler() {
-		@Override
-		public void onPreparePlayback() {
-			runOnUiThread (new Runnable() {
-		    	public void run() {
-		    		playbackManager.showMediaController();
-		    	}
-		    });
+			return VideoRecordingActivity.this.getWindowManager().getDefaultDisplay().getRotation();
 		}
 	};
 	
@@ -103,30 +88,21 @@ public class VideoRecordActivity extends Activity {
 		}
 		else {
 			switchBtn.setVisibility(View.GONE);
-		}	
+		}
 		
-		playbackManager = new VideoPlaybackManager(this, videoView, playbackHandler);
-	}
-	
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		playbackManager.showMediaController(); //TODO
-	    return false;
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		
-		playbackManager.pause();
+		playBtn = (Button) findViewById(R.id.playBtn);
+		playBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				play();
+			}
+		});
 	}
 	
 	@Override
 	protected void onDestroy() {
 		recordingManager.dispose();
 		recordingHandler = null;
-		playbackManager.dispose();
-		playbackHandler = null;
 		
 		super.onDestroy();
 	}
@@ -173,15 +149,10 @@ public class VideoRecordActivity extends Activity {
 		if (recordingManager.stopRecording()) {
 			recordBtn.setText(R.string.recordBtn);
 			switchBtn.setEnabled(true);
+			playBtn.setEnabled(true);
 			videoSizeSpinner.setEnabled(true);
-			
-    		playbackManager.getPlayerManager().getPlayer().reset(); //TODO
-			switchDisplay(false);
-			playbackManager.setupPlayback(fileName);
 		}
 		else {
-			switchDisplay(true);
-			
 			startRecording();
 		}
 	}
@@ -190,23 +161,16 @@ public class VideoRecordActivity extends Activity {
 		if (recordingManager.startRecording(fileName, videoSize)) {
 			recordBtn.setText(R.string.stopRecordBtn);
 			switchBtn.setEnabled(false);
+			playBtn.setEnabled(false);
 			videoSizeSpinner.setEnabled(false);
 			return;
 		}
 		Toast.makeText(this, getString(R.string.videoRecordingError), Toast.LENGTH_LONG).show();
 	}
-    
-    public void switchDisplay(boolean isRecording) {
-    	if (isRecording) {
-    		playbackManager.hideMediaController();
-    		playbackManager.getPlayerManager().stopPlaying();
-    		playbackManager.getPlayerManager().setDisplay(null);
-        	recordingManager.getCameraManager().setDisplay(recordingManager.getDisplay());
-    	}
-    	else {
-    		recordingManager.getCameraManager().stopCameraPreview();
-        	recordingManager.getCameraManager().setDisplay(null);
-        	playbackManager.getPlayerManager().setDisplay(recordingManager.getDisplay());
-    	}
-    }
+	
+	public void play() {
+		Intent i = new Intent(VideoRecordingActivity.this, VideoPlaybackActivity.class);
+		i.putExtra(VideoPlaybackActivity.FileNameArg, fileName);
+		startActivityForResult(i, 0);
+	}
 }

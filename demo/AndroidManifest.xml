@@ -38,9 +38,13 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.skd.androidrecordingtest.VideoRecordActivity"
+            android:name="com.skd.androidrecordingtest.VideoRecordingActivity"
             android:label="@string/videoActivity"
             android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.skd.androidrecordingtest.VideoPlaybackActivity"
+            android:label="@string/playActivity" >
         </activity>
     </application>
 

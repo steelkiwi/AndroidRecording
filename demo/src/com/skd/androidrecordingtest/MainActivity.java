@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
 				break;
 			}
 			case 1: {
-				Intent i = new Intent(MainActivity.this, VideoRecordActivity.class);
+				Intent i = new Intent(MainActivity.this, VideoRecordingActivity.class);
 				startActivity(i);
 				break;
 			}

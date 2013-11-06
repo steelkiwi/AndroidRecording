@@ -4,11 +4,10 @@
     android:layout_height="match_parent"
     android:background="#000000" >
 
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="#666666"
-        android:dividerHeight="1dp" />
+    <com.skd.androidrecording.video.AdaptiveSurfaceView
+        android:id="@+id/videoView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>

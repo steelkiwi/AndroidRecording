@@ -37,11 +37,21 @@ public class MediaPlayerManager {
     }
 
 	public void seekTo(int pos) {
-		player.seekTo(pos);
+		if (pos < 0) {
+			player.seekTo(0);
+		}
+		else if (pos > getDuration()) {
+			player.seekTo(getDuration());
+		}
+		else {
+			player.seekTo(pos);
+		}
 	}
 	
 	public void stopPlaying() {
-	    player.stop();
+		if (player.isPlaying()) {
+			player.stop();
+		}	
     }
 	
 	public boolean isPlaying() {
@@ -57,6 +67,7 @@ public class MediaPlayerManager {
 	}
 	
 	public void releasePlayer() {
+		setDisplay(null);
 		player.release();
 		player = null;
 	}
