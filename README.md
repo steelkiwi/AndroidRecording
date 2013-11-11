@@ -1,7 +1,7 @@
 Android Recording Library
 =======================================
 
-Android Recording library offers convinient tools for audio/video recording and playback.
+Android Recording library offers convenient tools for audio/video recording and playback.
 
 For audio it uses:
 * AudioRecord to capture and save audio signal from microphone
