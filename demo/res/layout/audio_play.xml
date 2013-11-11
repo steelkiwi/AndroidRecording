@@ -4,20 +4,11 @@
     android:layout_height="match_parent"
     android:background="#000000" >
 
-    <Button
-        android:id="@+id/recordBtn"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@android:color/holo_blue_light"
-        android:text="@string/recordBtn" >
-    </Button>
-
     <com.skd.androidrecording.visualizer.VisualizerView
         android:id="@+id/visualizerView"
         android:layout_width="fill_parent"
         android:layout_height="100dp"
-        android:layout_below="@+id/recordBtn"
+        android:layout_centerInParent="true"
         android:layout_margin="16dp" >
     </com.skd.androidrecording.visualizer.VisualizerView>
 

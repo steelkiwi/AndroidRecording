@@ -58,7 +58,7 @@ public class VideoRecordingActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.video);
+		setContentView(R.layout.video_rec);
 		
 		if (!StorageUtils.checkExternalStorageAvailable()) {
 			NotificationUtils.showInfoDialog(this, getString(R.string.noExtStorageAvailable));
@@ -157,7 +157,7 @@ public class VideoRecordingActivity extends Activity {
 		}
 	}
 	
-	public void startRecording() {
+	private void startRecording() {
 		if (recordingManager.startRecording(fileName, videoSize)) {
 			recordBtn.setText(R.string.stopRecordBtn);
 			switchBtn.setEnabled(false);
@@ -168,7 +168,7 @@ public class VideoRecordingActivity extends Activity {
 		Toast.makeText(this, getString(R.string.videoRecordingError), Toast.LENGTH_LONG).show();
 	}
 	
-	public void play() {
+	private void play() {
 		Intent i = new Intent(VideoRecordingActivity.this, VideoPlaybackActivity.class);
 		i.putExtra(VideoPlaybackActivity.FileNameArg, fileName);
 		startActivityForResult(i, 0);

@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
 	private void launchDemo(int position) {
 		switch (position) {
 			case 0: default: {
-				Intent i = new Intent(MainActivity.this, AudioRecordActivity.class);
+				Intent i = new Intent(MainActivity.this, AudioRecordingActivity.class);
 				startActivity(i);
 				break;
 			}

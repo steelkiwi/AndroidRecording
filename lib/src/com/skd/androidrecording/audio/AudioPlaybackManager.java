@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Steelkiwi Development, Julia Zudikova, Viacheslav Tiagotenkov
+ * Copyright (C) 2013 Steelkiwi Development, Julia Zudikova
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,47 @@
  * limitations under the License.
  */
 
-package com.skd.androidrecording.video;
+package com.skd.androidrecording.audio;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.view.SurfaceHolder;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 
+import com.skd.androidrecording.video.MediaPlayerManager;
+import com.skd.androidrecording.video.PlaybackHandler;
+import com.skd.androidrecording.visualizer.VisualizerView;
+
 /*
- * Controls video playback 
+ * Controls audio playback 
  */
 
-public class VideoPlaybackManager implements SurfaceHolder.Callback, OnPreparedListener, MediaPlayerControl, OnCompletionListener {
+public class AudioPlaybackManager implements OnGlobalLayoutListener, OnPreparedListener, MediaPlayerControl, OnCompletionListener {
+	private VisualizerView visualizerView;
 	private MediaPlayerManager playerManager;
 	private MediaController controller;
 	private PlaybackHandler playbackHandler;
 	private boolean isPlayerPrepared, isSurfaceCreated;
 	
-	public VideoPlaybackManager(Context ctx, AdaptiveSurfaceView videoView, PlaybackHandler playbackHandler) {
-		videoView.getHolder().addCallback(this);
-		
+	public AudioPlaybackManager(Context ctx, VisualizerView visualizerView, PlaybackHandler playbackHandler) {
 		this.playerManager = new MediaPlayerManager();
 		this.playerManager.getPlayer().setOnPreparedListener(this);
 		this.playerManager.getPlayer().setOnCompletionListener(this);
 	    
+		this.visualizerView = visualizerView;
+		this.visualizerView.link(this.playerManager.getPlayer());
+		this.visualizerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+		
 		this.controller = new MediaController(ctx);
         this.controller.setMediaPlayer(this);
-        this.controller.setAnchorView(videoView);
+        this.controller.setAnchorView(visualizerView);
         
-	    this.playbackHandler = playbackHandler;
+        this.playbackHandler = playbackHandler;
 	}
-	
+    
 	public void setupPlayback(String fileName) {
 		playerManager.setupPlayback(fileName);
 	}
@@ -64,37 +71,31 @@ public class VideoPlaybackManager implements SurfaceHolder.Callback, OnPreparedL
         controller.setEnabled(false);
 	}
 	
-	public MediaPlayerManager getPlayerManager() {
-		return playerManager;
+	private void releaseVisualizer() {
+		visualizerView.release();
+		visualizerView = null;
 	}
 	
 	public void dispose() {
 		playerManager.releasePlayer();
+		releaseVisualizer();
 		controller = null;
 		playbackHandler = null;
 	}
 	
-	//surface holder callbacks ******************************************************************
-    
+	//visualizer setup callback *****************************************************************
+	
 	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
+	public void onGlobalLayout() {
 		isSurfaceCreated = true;
-    	playerManager.setDisplay(holder);
     	if (isPlayerPrepared && isSurfaceCreated) {
 			playbackHandler.onPreparePlayback();
 		}
 	}
+	
+	//media player and controller callbacks *****************************************************
     
 	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
-	
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		playerManager.setDisplay(null);
-	}
-		
-	//media player and controller callbacks *****************************************************
-
 	public void onPrepared(MediaPlayer mp) {
 		isPlayerPrepared = true;
 		if (isPlayerPrepared && isSurfaceCreated) {

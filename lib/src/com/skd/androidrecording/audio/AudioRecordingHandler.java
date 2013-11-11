@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Steelkiwi Development, Julia Zudikova, Viacheslav Tiagotenkov
+ * Copyright (C) 2013 Steelkiwi Development, Julia Zudikova
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.skd.androidrecording.video;
+package com.skd.androidrecording.audio;
 
-import android.hardware.Camera.Size;
-
-public interface VideoRecordingHandler {
-	public boolean onPrepareRecording();
-	public Size getVideoSize();
-	public int getDisplayRotation();
+public interface AudioRecordingHandler {
+	public void onFftDataCapture(byte[] bytes);
+	public void onRecordSuccess();
+	public void onRecordingError();
+	public void onRecordSaveError();
 }

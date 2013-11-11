@@ -33,9 +33,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.skd.androidrecordingtest.AudioRecordActivity"
+            android:name="com.skd.androidrecordingtest.AudioRecordingActivity"
             android:label="@string/audioActivity"
             android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.skd.androidrecordingtest.AudioPlaybackActivity"
+            android:label="@string/playActivity" >
         </activity>
         <activity
             android:name="com.skd.androidrecordingtest.VideoRecordingActivity"

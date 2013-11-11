@@ -4,7 +4,7 @@
     <string name="app_name">Android Recording</string>
     <string name="audioActivity">Audio Recording</string>
     <string name="videoActivity">Video Recording</string>
-    <string name="playActivity">Video Playback</string>
+    <string name="playActivity">Playback</string>
 
     <string-array name="activities">
         <item name="audio">@string/audioActivity</item>

@@ -1,3 +1,7 @@
+/*
+ * Modified by Steelkiwi Development, Julia Zudikova
+ */
+
 /**
  * Copyright 2011, Felix Palmer
  *
