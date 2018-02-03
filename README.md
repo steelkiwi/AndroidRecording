@@ -13,6 +13,23 @@ For video it uses:
 * MediaPlayer with MediaController to play recorded video
 * custom SurfaceView with adjustable size to properly display Camera preview and recorded video (in portrait and landscape modes)
 
+Download
+--------
+```
+allprojects {
+    repositories {
+       maven {
+            url "https://jitpack.io"
+        }
+    }
+}
+```
+```
+dependencies {
+    compile 'com.github.steelkiwi:AndroidRecording:master'
+}
+```
+
 Record audio: how to use
 ------------------------
 
